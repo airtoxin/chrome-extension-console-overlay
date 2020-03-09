@@ -37,6 +37,7 @@ const isInteractive = process.stdout.isTTY;
 if (
   !checkRequiredFiles([
     paths.appPopupHtml,
+    paths.appDevtoolsHtml,
     paths.manifestJson,
     paths.appIndexJs,
     paths.appBackgroundJs,

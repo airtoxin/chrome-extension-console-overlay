@@ -77,6 +77,8 @@ module.exports = {
   appIndexJs: resolveModule(resolveApp, 'src/index'),
   appBackgroundJs: resolveModule(resolveApp, 'src/background/index'),
   appContentScriptJs: resolveModule(resolveApp, 'src/contentScript/index'),
+  appDevtoolsHtml: resolveApp('public/devtools.html'),
+  appDevtoolsJs: resolveModule(resolveApp, 'src/devtools_page/index'),
   appPackageJson: resolveApp('package.json'),
   appSrc: resolveApp('src'),
   appTsConfig: resolveApp('tsconfig.json'),
