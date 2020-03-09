@@ -1,15 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { EventEmitter } from "events";
+import JSONTree from 'react-json-tree'
 
 type Props = {
   logger: EventEmitter
 };
 
+type LogMessage = {
+  id: number;
+  message: any[];
+}
+
 export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
-  const [logs, setLogs] = useState<string[]>([]);
+  const [logs, setLogs] = useState<LogMessage[]>([]);
   useEffect(() => {
-    logger.on("log", (messages: Object[]) => {
-      setLogs(logs.concat(messages.map(m => m.toString())));
+    logger.on("log", (messages: any[]) => {
+      const logMessages = messages.map(message => ({
+        id: Math.random(),
+        message
+      }));
+
+      setLogs(logs.concat(logMessages));
     });
   }, [logger, logs]);
 
@@ -23,7 +34,9 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
       }}
     >
       console log
-      {logs.map(log => <p>{log}</p>)}
+      {logs.map(log => (
+        <JSONTree key={log.id} data={log.message}/>
+      ))}
     </div>
   );
 };
