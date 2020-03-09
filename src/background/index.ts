@@ -4,7 +4,6 @@ messageInBackground();
 
 // This needs to be an export due to typescript implementation limitation of needing '--isolatedModules' tsconfig
 export function messageInBackground() {
-  chrome.devtools.inspectedWindow.getResources(resources => {
-    console.log("@resources", resources);
-  });
+  console.log('I can run your javascript like any other code in your project');
+  console.log('just do not forget, I cannot render anything !');
 }
