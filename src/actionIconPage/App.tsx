@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import update from "immutability-helper";
 
@@ -53,7 +53,7 @@ const LoggingOption: React.FunctionComponent<{
 };
 
 function App() {
-  const [options, setOptions] = useState({
+  const [options, setOptionsRaw] = useState({
     trace: {
       use: false,
       backgroundColor: "rgba(0,0,0,0)"
@@ -79,6 +79,19 @@ function App() {
       backgroundColor: "rgba(255,0,0,0.1)"
     }
   } as const);
+  const setOptions = useCallback((newOptions: typeof options) => {
+    setOptionsRaw(newOptions);
+    chrome.storage.sync.set({ options: newOptions });
+  }, []);
+
+  useEffect(() => {
+    chrome.storage.sync.get(storedValues => {
+      if (storedValues.options) {
+        setOptions(storedValues.options as any);
+      }
+    });
+  }, []);
+
   return (
     <div className="App">
       <table>
@@ -93,6 +106,7 @@ function App() {
           {Object.entries(options).map(
             ([logType, { use, backgroundColor }]) => (
               <LoggingOption
+                key={logType}
                 logType={logType}
                 use={use}
                 onChangeUse={nextUse =>

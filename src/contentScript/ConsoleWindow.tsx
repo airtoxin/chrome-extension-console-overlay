@@ -13,8 +13,11 @@ type LogMessage = {
 };
 
 export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
-  const [visibility, setVisibility] = useState<"initial" | "visible" | "invisible">("initial");
+  const [visibility, setVisibility] = useState<
+    "initial" | "visible" | "invisible"
+  >("initial");
   const [logs, setLogs] = useState<LogMessage[]>([]);
+  const [options, setOptions] = useState<any>({});
 
   const consoleEventListener = useCallback(
     (eventType: string, message: any[]) => {
@@ -37,6 +40,20 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
     return () => void logger.off("console", consoleEventListener);
   }, [consoleEventListener, logger, logs]);
 
+  useEffect(() => {
+    const listener = (event: MessageEvent) => {
+      if (
+        event.data?.type === "chrome-extension-console-overlay:changeOptions" &&
+        event.data?.options
+      ) {
+        setOptions(event.data.options);
+      }
+    };
+
+    window.addEventListener("message", listener);
+    return () => window.removeEventListener("message", listener);
+  }, []);
+
   return (
     <div
       style={{
@@ -50,21 +67,26 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
       }}
     >
       {visibility === "visible" &&
-        logs.map(log => (
-          <ObjectInspector
-            key={log.id}
-            data={log.message}
-            theme={{
-              ...chromeLight,
-              BASE_BACKGROUND_COLOR: "rgba(0, 0, 0, 0)"
-            }}
-          />
-        ))}
+        logs
+          .filter(log => options[log.eventType]?.use)
+          .map(log => (
+            <ObjectInspector
+              key={log.id}
+              data={log.message}
+              theme={{
+                ...chromeLight,
+                BASE_BACKGROUND_COLOR:
+                  options[log.eventType]?.backgroundColor ?? "rgba(0, 0, 0, 0)"
+              }}
+            />
+          ))}
       {visibility !== "initial" && (
         <div style={{ display: "flex" }}>
           <button
             style={{ flex: 1 }}
-            onClick={() => setVisibility(visibility === "visible" ? "invisible" : "visible")}
+            onClick={() =>
+              setVisibility(visibility === "visible" ? "invisible" : "visible")
+            }
           >
             Toggle
           </button>
@@ -74,7 +96,9 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
               setLogs([]);
               setVisibility("initial");
             }}
-          >Clear</button>
+          >
+            Clear
+          </button>
         </div>
       )}
     </div>

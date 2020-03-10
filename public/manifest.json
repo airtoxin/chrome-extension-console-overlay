@@ -23,7 +23,7 @@
     "48": "img/icon-48.png",
     "128": "img/icon-128.png"
   },
-  "permissions": ["tabs","activeTab"],
+  "permissions": ["tabs","activeTab", "storage"],
   "web_accessible_resources": [
     "contentScript.bundle.js"
   ],
