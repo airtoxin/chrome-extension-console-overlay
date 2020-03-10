@@ -1,4 +1,4 @@
-import { onChangeOptions } from "./storageUtils";
+import { onChangeOptions } from "./storage";
 import { CHANGE_OPTIONS_MESSAGE_TYPE, SCRIPT_ID } from "../constants";
 
 const injectScriptFile = function(file: string) {

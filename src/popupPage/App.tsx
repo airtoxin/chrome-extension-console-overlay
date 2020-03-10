@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import update from "immutability-helper";
 import { Options } from "../options";
-import { loadOptions, saveOptions } from "./storageUtils";
+import { loadOptions, saveOptions } from "./storage";
 
 const LoggingOption: React.FunctionComponent<{
   logType: string;
