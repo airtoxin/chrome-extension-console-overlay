@@ -1,17 +1,30 @@
 import React, { useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
+import update from "immutability-helper";
 
 const LoggingOption: React.FunctionComponent<{
   logType: string;
   use: boolean;
+  onChangeUse: (nextUse: boolean) => void;
   backgroundColor: string;
-}> = ({logType, use, backgroundColor}) => {
+  onChangeBackgroundColor: (nextBackgroundColor: string) => void;
+}> = ({
+  logType,
+  use,
+  onChangeUse,
+  backgroundColor,
+  onChangeBackgroundColor
+}) => {
   return (
     <tr>
       <td>console.{logType}</td>
       <td>
-        <input type="checkbox" checked={use}/>
+        <input
+          type="checkbox"
+          checked={use}
+          onChange={event => onChangeUse(event.currentTarget.checked)}
+        />
       </td>
       <td>
         <div
@@ -21,9 +34,19 @@ const LoggingOption: React.FunctionComponent<{
           }}
         >
           <div
-            style={{ width: "1em", height: "1em", backgroundColor: backgroundColor }}
+            style={{
+              width: "1em",
+              height: "1em",
+              backgroundColor: backgroundColor
+            }}
           />
-          <input type="text" value={backgroundColor}/>
+          <input
+            type="text"
+            value={backgroundColor}
+            onChange={event =>
+              onChangeBackgroundColor(event.currentTarget.value)
+            }
+          />
         </div>
       </td>
     </tr>
@@ -55,7 +78,7 @@ function App() {
     error: {
       use: true,
       backgroundColor: "rgba(255,0,0,0.1)"
-    },
+    }
   } as const);
   return (
     <div className="App">
@@ -68,13 +91,29 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {Object.entries(options).map(([logType, { use, backgroundColor }]) => (
-            <LoggingOption
-              logType={logType}
-              use={use}
-              backgroundColor={backgroundColor}
-            />
-          ))}
+          {Object.entries(options).map(
+            ([logType, { use, backgroundColor }]) => (
+              <LoggingOption
+                logType={logType}
+                use={use}
+                onChangeUse={nextUse =>
+                  setOptions(
+                    update(options, { [logType]: { use: { $set: nextUse } } })
+                  )
+                }
+                backgroundColor={backgroundColor}
+                onChangeBackgroundColor={nextBackgroundColor =>
+                  setOptions(
+                    update(options, {
+                      [logType]: {
+                        backgroundColor: { $set: nextBackgroundColor }
+                      }
+                    })
+                  )
+                }
+              />
+            )
+          )}
         </tbody>
       </table>
       <header className="App-header">
