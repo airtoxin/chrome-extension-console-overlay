@@ -8,6 +8,7 @@ type Props = {
 
 type LogMessage = {
   id: number;
+  eventType: string;
   message: any[];
 };
 
@@ -15,12 +16,13 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
   const [visibility, setVisibility] = useState<"initial" | "visible" | "invisible">("initial");
   const [logs, setLogs] = useState<LogMessage[]>([]);
 
-  const logMessageListener = useCallback(
-    (message: any[]) => {
+  const consoleEventListener = useCallback(
+    (eventType: string, message: any[]) => {
       setLogs(
         logs.concat([
           {
             id: Math.random(),
+            eventType,
             message
           }
         ])
@@ -29,11 +31,11 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
     },
     [logs]
   );
-  useEffect(() => {
-    logger.on("log", logMessageListener);
 
-    return () => void logger.off("log", logMessageListener);
-  }, [logMessageListener, logger, logs]);
+  useEffect(() => {
+    logger.on("console", consoleEventListener);
+    return () => void logger.off("log", consoleEventListener);
+  }, [consoleEventListener, logger, logs]);
 
   return (
     <div
