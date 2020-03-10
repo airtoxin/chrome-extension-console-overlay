@@ -1,7 +1,11 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { EventEmitter } from "events";
 import { chromeLight, ObjectInspector } from "react-inspector";
-import { CHANGE_OPTIONS_MESSAGE_TYPE } from "../constants";
+import {
+  CHANGE_OPTIONS_MESSAGE_TYPE,
+  PING_MESSAGE_TYPE,
+  PONG_MESSAGE_TYPE
+} from "../constants";
 import { LogType, Options } from "../options";
 
 type Props = {
@@ -20,9 +24,21 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
   >("initial");
   const [logs, setLogs] = useState<LogMessage[]>([]);
   const [options, setOptions] = useState<Options | null>(null);
+  const [isReady, setIsReady] = useState(false);
 
-  const consoleEventListener = useCallback(
-    (eventType: LogType, message: any[]) => {
+  useEffect(() => {
+    const listener = (event: MessageEvent) => {
+      if (event.data?.type === PING_MESSAGE_TYPE) {
+        window.postMessage({ type: PONG_MESSAGE_TYPE }, "*");
+        setIsReady(true);
+      }
+    };
+    window.addEventListener("message", listener);
+    return () => window.removeEventListener("message", listener);
+  }, []);
+
+  useEffect(() => {
+    const listener = (eventType: LogType, message: any[]) => {
       setLogs(
         logs.concat([
           {
@@ -33,14 +49,11 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
         ])
       );
       setVisibility("visible");
-    },
-    [logs]
-  );
+    };
 
-  useEffect(() => {
-    logger.on("console", consoleEventListener);
-    return () => void logger.off("console", consoleEventListener);
-  }, [consoleEventListener, logger, logs]);
+    logger.on("console", listener);
+    return () => void logger.off("console", listener);
+  }, [logger, logs]);
 
   useEffect(() => {
     const listener = (event: MessageEvent) => {
@@ -56,7 +69,7 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
     return () => window.removeEventListener("message", listener);
   }, []);
 
-  if (options == null) return null;
+  if (options == null || !isReady) return null;
   return (
     <div
       style={{

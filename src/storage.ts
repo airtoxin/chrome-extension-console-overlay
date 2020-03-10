@@ -23,6 +23,9 @@ export const onChangeOptions = (
   });
 
   if (useInitialFire) {
-    callback(initialValue, initialValue);
+    chrome.storage.sync.get(values => {
+      const options = values.options ?? initialValue;
+      callback(options, options);
+    });
   }
 };

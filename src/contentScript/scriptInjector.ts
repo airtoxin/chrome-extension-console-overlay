@@ -1,5 +1,5 @@
 import { onChangeOptions } from "../storage";
-import { CHANGE_OPTIONS_MESSAGE_TYPE, SCRIPT_ID } from "../constants";
+import { CHANGE_OPTIONS_MESSAGE_TYPE, PING_MESSAGE_TYPE, PONG_MESSAGE_TYPE, SCRIPT_ID } from "../constants";
 
 const injectScriptFile = function(file: string) {
   const script = document.createElement("script");
@@ -27,15 +27,21 @@ injectScriptFile(chrome.extension.getURL("/contentScript.bundle.js"));
 onChangeOptions(options => {
   injectOrReplaceScript(`
   (() => {
-    const sendMessage = () => window.postMessage({
-      type: "${CHANGE_OPTIONS_MESSAGE_TYPE}",
-      options: ${JSON.stringify(options)}
-    }, "*");
-    if (document.readyState === "complete") {
-      sendMessage();
-    } else {
-      document.addEventListener("DOMContentLoaded", sendMessage);
-    }
+    const pinger = setInterval(() => {
+      window.postMessage({
+        type: "${PING_MESSAGE_TYPE}"
+      });
+    }, 300);
+
+    window.addEventListener("message", event => {
+      if (event.data && event.data.type === "${PONG_MESSAGE_TYPE}") {
+        clearInterval(pinger);
+        window.postMessage({
+          type: "${CHANGE_OPTIONS_MESSAGE_TYPE}",
+          options: ${JSON.stringify(options)}
+        }, "*");
+      }
+    });
   })();
   `);
 }, true);
