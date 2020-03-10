@@ -26,9 +26,16 @@ injectScriptFile(chrome.extension.getURL("/contentScript.bundle.js"));
 
 onChangeOptions(options => {
   injectOrReplaceScript(`
-  window.postMessage({
-    type: "${CHANGE_OPTIONS_MESSAGE_TYPE}",
-    options: ${JSON.stringify(options)}
-  }, "*");
+  (() => {
+    const sendMessage = () => window.postMessage({
+      type: "${CHANGE_OPTIONS_MESSAGE_TYPE}",
+      options: ${JSON.stringify(options)}
+    }, "*");
+    if (document.readyState === "complete") {
+      sendMessage();
+    } else {
+      document.addEventListener("DOMContentLoaded", sendMessage);
+    }
+  })();
   `);
 }, true);
