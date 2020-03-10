@@ -148,7 +148,7 @@ module.exports = function(webpackEnv) {
         isEnvDevelopment &&
           require.resolve('webpack-dev-server/client') +
             '?http://localhost:4000',
-        paths.appIndexJs,
+        paths.appPopupJs,
       ].filter(Boolean),
       scriptLoader: [
         isEnvDevelopment &&

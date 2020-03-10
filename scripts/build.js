@@ -44,7 +44,7 @@ if (
     paths.appPopupHtml,
     paths.appDevtoolsHtml,
     paths.manifestJson,
-    paths.appIndexJs,
+    paths.appPopupJs,
     paths.appScriptLoaderJs,
     paths.appBackgroundJs,
     paths.appContentScriptJs,
