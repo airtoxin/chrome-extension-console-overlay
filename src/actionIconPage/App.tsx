@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import update from "immutability-helper";
+import { initialValue } from "../options";
+import { loadOptions, saveOptions } from "./storageUtils";
 
 const LoggingOption: React.FunctionComponent<{
   logType: string;
@@ -53,43 +55,14 @@ const LoggingOption: React.FunctionComponent<{
 };
 
 function App() {
-  const [options, setOptionsRaw] = useState({
-    trace: {
-      use: false,
-      backgroundColor: "rgba(0,0,0,0)"
-    },
-    debug: {
-      use: false,
-      backgroundColor: "rgba(0,0,0,0)"
-    },
-    log: {
-      use: true,
-      backgroundColor: "rgba(0,0,0,0)"
-    },
-    info: {
-      use: true,
-      backgroundColor: "rgba(0,0,0,0)"
-    },
-    warn: {
-      use: true,
-      backgroundColor: "rgba(255,255,0,0.3)"
-    },
-    error: {
-      use: true,
-      backgroundColor: "rgba(255,0,0,0.1)"
-    }
-  } as const);
+  const [options, setOptionsRaw] = useState(initialValue);
   const setOptions = useCallback((newOptions: typeof options) => {
     setOptionsRaw(newOptions);
-    chrome.storage.sync.set({ options: newOptions });
-  }, []);
+    saveOptions(newOptions);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    chrome.storage.sync.get(storedValues => {
-      if (storedValues.options) {
-        setOptions(storedValues.options as any);
-      }
-    });
+    loadOptions().then(setOptionsRaw);
   }, []);
 
   return (

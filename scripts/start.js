@@ -40,6 +40,7 @@ if (
     paths.appDevtoolsHtml,
     paths.manifestJson,
     paths.appIndexJs,
+    paths.appScriptLoaderJs,
     paths.appBackgroundJs,
     paths.appContentScriptJs,
   ])

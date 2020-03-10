@@ -150,6 +150,12 @@ module.exports = function(webpackEnv) {
             '?http://localhost:4000',
         paths.appIndexJs,
       ].filter(Boolean),
+      scriptLoader: [
+        isEnvDevelopment &&
+        require.resolve('webpack-dev-server/client') +
+        '?http://localhost:4000',
+        paths.appScriptLoaderJs,
+      ].filter(Boolean),
       devtools: [
         isEnvDevelopment &&
           require.resolve('webpack-dev-server/client') +
