@@ -15,7 +15,7 @@ export const initialValue: Options = {
   },
   debug: {
     use: false,
-    backgroundColor: "rgba(0,0,0,0)"
+    backgroundColor: "rgba(0,127,255,0.1)"
   },
   log: {
     use: true,
