@@ -40,7 +40,7 @@ if (
     paths.appDevtoolsHtml,
     paths.manifestJson,
     paths.appPopupJs,
-    paths.appScriptLoaderJs,
+    paths.appScriptInjectorJs,
     paths.appBackgroundJs,
     paths.appContentScriptJs,
   ])
