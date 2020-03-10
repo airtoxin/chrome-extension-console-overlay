@@ -2,16 +2,10 @@ export type LoggingOption = {
   use: boolean;
   backgroundColor: string;
 };
-type LogType =
-  | "trace"
-  | "debug"
-  | "log"
-  | "info"
-  | "warn"
-  | "error"
+type LogType = "trace" | "debug" | "log" | "info" | "warn" | "error";
 
 export type Options = {
-  [logType in LogType]: LoggingOption
+  [logType in LogType]: LoggingOption;
 };
 
 export const initialValue: Options = {
