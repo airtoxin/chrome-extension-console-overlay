@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { EventEmitter } from "events";
 import { chromeLight, ObjectInspector } from "react-inspector";
+import { CHANGE_OPTIONS_MESSAGE_TYPE } from "../constants";
+import { LogType, Options } from "../options";
 
 type Props = {
   logger: EventEmitter;
@@ -8,7 +10,7 @@ type Props = {
 
 type LogMessage = {
   id: number;
-  eventType: string;
+  eventType: LogType;
   message: any[];
 };
 
@@ -17,10 +19,10 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
     "initial" | "visible" | "invisible"
   >("initial");
   const [logs, setLogs] = useState<LogMessage[]>([]);
-  const [options, setOptions] = useState<any>({});
+  const [options, setOptions] = useState<Options | null>(null);
 
   const consoleEventListener = useCallback(
-    (eventType: string, message: any[]) => {
+    (eventType: LogType, message: any[]) => {
       setLogs(
         logs.concat([
           {
@@ -43,8 +45,8 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
   useEffect(() => {
     const listener = (event: MessageEvent) => {
       if (
-        event.data?.type === "chrome-extension-console-overlay:changeOptions" &&
-        event.data?.options
+        event.data?.type === CHANGE_OPTIONS_MESSAGE_TYPE &&
+        event.data.options
       ) {
         setOptions(event.data.options);
       }
@@ -54,6 +56,7 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
     return () => window.removeEventListener("message", listener);
   }, []);
 
+  if (options == null) return null;
   return (
     <div
       style={{

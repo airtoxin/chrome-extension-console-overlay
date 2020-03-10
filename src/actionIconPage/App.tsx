@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import update from "immutability-helper";
-import { initialValue } from "../options";
+import { Options } from "../options";
 import { loadOptions, saveOptions } from "./storageUtils";
 
 const LoggingOption: React.FunctionComponent<{
@@ -55,16 +55,17 @@ const LoggingOption: React.FunctionComponent<{
 };
 
 function App() {
-  const [options, setOptionsRaw] = useState(initialValue);
-  const setOptions = useCallback((newOptions: typeof options) => {
+  const [options, setOptionsRaw] = useState<Options | null>(null);
+  const setOptions = useCallback((newOptions: Options) => {
     setOptionsRaw(newOptions);
     saveOptions(newOptions);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     loadOptions().then(setOptionsRaw);
   }, []);
 
+  if (options == null) return null;
   return (
     <div className="App">
       <table>

@@ -1,4 +1,5 @@
 import { onChangeOptions } from "./actionIconPage/storageUtils";
+import { CHANGE_OPTIONS_MESSAGE_TYPE, SCRIPT_ID } from "./constants";
 
 const injectScriptFile = function(file: string) {
   const script = document.createElement("script");
@@ -6,19 +7,27 @@ const injectScriptFile = function(file: string) {
   script.setAttribute("src", file);
   document.body.appendChild(script);
 };
-const scriptLoader = function(scriptText: string) {
+
+const injectOrReplaceScript = (scriptText: string) => {
+  const oldScript = document.getElementById(SCRIPT_ID);
+  if (oldScript) {
+    document.body.removeChild(oldScript);
+  }
+
   const script = document.createElement("script");
+  script.setAttribute("id", SCRIPT_ID);
   script.setAttribute("type", "text/javascript");
-  script.innerText = scriptText;
   document.body.appendChild(script);
+
+  script.textContent = scriptText;
 };
 
 injectScriptFile(chrome.extension.getURL("/contentScript.bundle.js"));
 
 onChangeOptions(options => {
-  scriptLoader(`
+  injectOrReplaceScript(`
   window.postMessage({
-    type: "chrome-extension-console-overlay:changeOptions",
+    type: "${CHANGE_OPTIONS_MESSAGE_TYPE}",
     options: ${JSON.stringify(options)}
   }, "*");
   `);
