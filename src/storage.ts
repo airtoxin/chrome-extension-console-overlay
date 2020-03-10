@@ -1,4 +1,4 @@
-import { initialValue, Options } from "../options";
+import { initialValue, Options } from "./options";
 
 export const saveOptions = (options: Options) => {
   chrome.storage.sync.set({ options });
