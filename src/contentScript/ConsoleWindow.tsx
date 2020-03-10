@@ -34,7 +34,7 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
 
   useEffect(() => {
     logger.on("console", consoleEventListener);
-    return () => void logger.off("log", consoleEventListener);
+    return () => void logger.off("console", consoleEventListener);
   }, [consoleEventListener, logger, logs]);
 
   return (
@@ -61,12 +61,21 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
           />
         ))}
       {visibility !== "initial" && (
-        <button
-          style={{ width: "100%" }}
-          onClick={() => setVisibility(visibility === "visible" ? "invisible" : "visible")}
-        >
-          Toggle
-        </button>
+        <div style={{ display: "flex" }}>
+          <button
+            style={{ flex: 1 }}
+            onClick={() => setVisibility(visibility === "visible" ? "invisible" : "visible")}
+          >
+            Toggle
+          </button>
+          <button
+            style={{ flex: 1 }}
+            onClick={() => {
+              setLogs([]);
+              setVisibility("initial");
+            }}
+          >Clear</button>
+        </div>
       )}
     </div>
   );

@@ -12,6 +12,11 @@ console.trace = new Proxy(console.trace, {
     ee.emit("console", "trace", argArray);
   }
 });
+console.debug = new Proxy(console.debug, {
+  apply(_target, _thisArg, argArray) {
+    ee.emit("console", "debug", argArray);
+  }
+});
 console.info = new Proxy(console.info, {
   apply(_target, _thisArg, argArray) {
     ee.emit("console", "info", argArray);
@@ -20,11 +25,6 @@ console.info = new Proxy(console.info, {
 console.log = new Proxy(console.log, {
   apply(_target, _thisArg, argArray) {
     ee.emit("console", "log", argArray);
-  }
-});
-console.debug = new Proxy(console.debug, {
-  apply(_target, _thisArg, argArray) {
-    ee.emit("console", "debug", argArray);
   }
 });
 console.warn = new Proxy(console.warn, {
