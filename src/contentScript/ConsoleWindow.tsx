@@ -12,6 +12,7 @@ type LogMessage = {
 };
 
 export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
+  const [isVisible, setIsVisible] = useState(true);
   const [logs, setLogs] = useState<LogMessage[]>([]);
   const logMessageListener = useCallback(
     (message: any[]) => {
@@ -44,16 +45,23 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
         overflowY: "scroll"
       }}
     >
-      {logs.map(log => (
-        <ObjectInspector
-          key={log.id}
-          data={log.message}
-          theme={{
-            ...chromeLight,
-            BASE_BACKGROUND_COLOR: "rgba(0, 0, 0, 0)"
-          }}
-        />
-      ))}
+      {isVisible &&
+        logs.map(log => (
+          <ObjectInspector
+            key={log.id}
+            data={log.message}
+            theme={{
+              ...chromeLight,
+              BASE_BACKGROUND_COLOR: "rgba(0, 0, 0, 0)"
+            }}
+          />
+        ))}
+      <button
+        style={{ width: "100%" }}
+        onClick={() => setIsVisible(!isVisible)}
+      >
+        Toggle
+      </button>
     </div>
   );
 };
