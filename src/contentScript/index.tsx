@@ -7,9 +7,10 @@ const consoleOverlayDiv = document.createElement("div");
 document.body.appendChild(consoleOverlayDiv);
 
 const ee = new EventEmitter();
-window.console.table = (...messages: any[]) => {
+const original = window.console.log.bind(window.console.log);
+window.console.log = (...messages: any[]) => {
   ee.emit("log", messages);
-  console.log("@messages", messages);
+  original(...messages);
 };
 
 render(<ConsoleWindow logger={ee} />, consoleOverlayDiv);
