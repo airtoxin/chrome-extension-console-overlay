@@ -1,8 +1,62 @@
-import React from "react";
+import React, { useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 
+const LoggingOption: React.FunctionComponent<{
+  logType: string;
+  use: boolean;
+  backgroundColor: string;
+}> = ({logType, use, backgroundColor}) => {
+  return (
+    <tr>
+      <td>console.{logType}</td>
+      <td>
+        <input type="checkbox" checked={use}/>
+      </td>
+      <td>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center"
+          }}
+        >
+          <div
+            style={{ width: "1em", height: "1em", backgroundColor: backgroundColor }}
+          />
+          <input type="text" value={backgroundColor}/>
+        </div>
+      </td>
+    </tr>
+  );
+};
+
 function App() {
+  const [options, setOptions] = useState({
+    trace: {
+      use: false,
+      backgroundColor: "rgba(0,0,0,0)"
+    },
+    debug: {
+      use: false,
+      backgroundColor: "rgba(0,0,0,0)"
+    },
+    log: {
+      use: true,
+      backgroundColor: "rgba(0,0,0,0)"
+    },
+    info: {
+      use: true,
+      backgroundColor: "rgba(0,0,0,0)"
+    },
+    warn: {
+      use: true,
+      backgroundColor: "rgba(255,255,0,0.3)"
+    },
+    error: {
+      use: true,
+      backgroundColor: "rgba(255,0,0,0.1)"
+    },
+  } as const);
   return (
     <div className="App">
       <table>
@@ -14,72 +68,13 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>console.trace</td>
-            <td>
-              <input type="checkbox" />
-            </td>
-            <td>
-              <div
-                style={{ width: "1em", height: "1em", backgroundColor: "red" }}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>console.debug</td>
-            <td>
-              <input type="checkbox" />
-            </td>
-            <td>
-              <div
-                style={{ width: "1em", height: "1em", backgroundColor: "red" }}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>console.log</td>
-            <td>
-              <input type="checkbox" />
-            </td>
-            <td>
-              <div
-                style={{ width: "1em", height: "1em", backgroundColor: "red" }}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>console.info</td>
-            <td>
-              <input type="checkbox" />
-            </td>
-            <td>
-              <div
-                style={{ width: "1em", height: "1em", backgroundColor: "red" }}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>console.warn</td>
-            <td>
-              <input type="checkbox" />
-            </td>
-            <td>
-              <div
-                style={{ width: "1em", height: "1em", backgroundColor: "red" }}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>console.error</td>
-            <td>
-              <input type="checkbox" />
-            </td>
-            <td>
-              <div
-                style={{ width: "1em", height: "1em", backgroundColor: "red" }}
-              />
-            </td>
-          </tr>
+          {Object.entries(options).map(([logType, { use, backgroundColor }]) => (
+            <LoggingOption
+              logType={logType}
+              use={use}
+              backgroundColor={backgroundColor}
+            />
+          ))}
         </tbody>
       </table>
       <header className="App-header">
