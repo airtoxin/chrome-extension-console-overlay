@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { EventEmitter } from "events";
 import { chromeLight, ObjectInspector } from "react-inspector";
 import {
@@ -25,6 +25,15 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
   const [logs, setLogs] = useState<LogMessage[]>([]);
   const [options, setOptions] = useState<Options | null>(null);
   const [isReady, setIsReady] = useState(false);
+  const filteredLogs = useMemo(
+    () =>
+      options == null ? [] : logs.filter(log => options[log.eventType].use),
+    [logs, options]
+  );
+  const shouldShow = useMemo(
+    () => visibility === "visible" && filteredLogs.length > 0,
+    [filteredLogs.length, visibility]
+  );
 
   useEffect(() => {
     const listener = (event: MessageEvent) => {
@@ -82,41 +91,42 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
         overflowY: "scroll"
       }}
     >
-      {visibility === "visible" &&
-        logs
-          .filter(log => options[log.eventType]?.use)
-          .map(log => (
-            <ObjectInspector
-              key={log.id}
-              data={log.message}
-              theme={{
-                ...chromeLight,
-                BASE_BACKGROUND_COLOR:
-                  options[log.eventType]?.backgroundColor ?? "rgba(0, 0, 0, 0)"
-              }}
-            />
-          ))}
-      {visibility !== "initial" && (
-        <div style={{ display: "flex" }}>
-          <button
-            style={{ flex: 1 }}
-            onClick={() =>
-              setVisibility(visibility === "visible" ? "invisible" : "visible")
-            }
-          >
-            Toggle
-          </button>
-          <button
-            style={{ flex: 1 }}
-            onClick={() => {
-              setLogs([]);
-              setVisibility("initial");
-            }}
-          >
-            Clear
-          </button>
-        </div>
-      )}
+      {
+        shouldShow && (
+          <>
+            {filteredLogs.map(log => (
+              <ObjectInspector
+                key={log.id}
+                data={log.message}
+                theme={{
+                  ...chromeLight,
+                  BASE_BACKGROUND_COLOR:
+                    options[log.eventType]?.backgroundColor ?? "rgba(0, 0, 0, 0)"
+                }}
+              />
+            ))}
+            <div style={{ display: "flex" }}>
+              <button
+                style={{ flex: 1 }}
+                onClick={() =>
+                  setVisibility(visibility === "visible" ? "invisible" : "visible")
+                }
+              >
+                Toggle
+              </button>
+              <button
+                style={{ flex: 1 }}
+                onClick={() => {
+                  setLogs([]);
+                  setVisibility("initial");
+                }}
+              >
+                Clear
+              </button>
+            </div>
+          </>
+        )
+      }
     </div>
   );
 };
