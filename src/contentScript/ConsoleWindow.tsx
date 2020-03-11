@@ -44,6 +44,7 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
   );
   const outerRef = useRef<HTMLDivElement | null>(null);
   const innerRef = useRef<HTMLDivElement | null>(null);
+  const [shouldScrollToBottom, setShouldScrollToBottom] = useState(true);
 
   useEffect(() => {
     const listener = (event: MessageEvent) => {
@@ -90,6 +91,7 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
 
   useEffect(() => {
     if (
+      shouldScrollToBottom &&
       outerRef.current &&
       innerRef.current &&
       innerRef.current.clientHeight > window.innerHeight
@@ -107,7 +109,7 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
         }
       });
     }
-  }, [filteredLogs]);
+  }, [filteredLogs, shouldScrollToBottom]);
 
   if (options == null || !isReady) return null;
   return (
@@ -122,6 +124,13 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
         backgroundColor: DEFAULT_BACKGROUND_COLOR,
         maxHeight: "100vh",
         overflowY: "scroll"
+      }}
+      onScroll={event => {
+        setShouldScrollToBottom(
+          innerRef.current != null &&
+            innerRef.current.scrollHeight - window.innerHeight ===
+              event.currentTarget.scrollTop
+        );
       }}
     >
       <div className="INNER_REF" ref={innerRef}>
