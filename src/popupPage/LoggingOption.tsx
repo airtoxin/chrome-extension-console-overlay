@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { ChromePicker } from "react-color";
 
 export const LoggingOption: React.FunctionComponent<{
   logType: string;
@@ -13,6 +14,8 @@ export const LoggingOption: React.FunctionComponent<{
   backgroundColor,
   onChangeBackgroundColor
 }) => {
+  const [isVisibleColorPicker, setIsVisibleColorPicker] = useState(false);
+
   return (
     <tr>
       <td>console.{logType}</td>
@@ -25,25 +28,34 @@ export const LoggingOption: React.FunctionComponent<{
       </td>
       <td>
         <div
+          tabIndex={0}
+          onBlur={() => setIsVisibleColorPicker(false)}
           style={{
             display: "flex",
-            alignItems: "center"
+            alignItems: "center",
+            outline: "none"
           }}
         >
-          <div
-            style={{
-              width: "1em",
-              height: "1em",
-              backgroundColor: backgroundColor
-            }}
-          />
-          <input
-            type="text"
-            value={backgroundColor}
-            onChange={event =>
-              onChangeBackgroundColor(event.currentTarget.value)
-            }
-          />
+          {isVisibleColorPicker ? (
+            <ChromePicker
+              disableAlpha={false}
+              color={backgroundColor}
+              onChange={({ rgb: { r, g, b, a } }) =>
+                onChangeBackgroundColor(`rgba(${r},${g},${b},${a})`)
+              }
+            />
+          ) : (
+            <div
+              style={{
+                width: "1rem",
+                height: "1rem",
+                margin: "0.5rem",
+                border: "solid 1px",
+                backgroundColor: backgroundColor
+              }}
+              onClick={() => setIsVisibleColorPicker(true)}
+            />
+          )}
         </div>
       </td>
     </tr>
