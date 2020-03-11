@@ -38,6 +38,12 @@ export const proxyConsole = (): EventEmitter => {
       target(...argArray);
     }
   });
+  console.table = new Proxy(console.table, {
+    apply(target, _thisArg, argArray) {
+      ee.emit("console", "table", argArray);
+      target(...argArray);
+    }
+  });
 
   return ee;
 };

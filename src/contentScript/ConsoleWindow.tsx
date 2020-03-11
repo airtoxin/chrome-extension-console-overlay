@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { EventEmitter } from "events";
-import { chromeLight, ObjectInspector } from "react-inspector";
+import { chromeLight, ObjectInspector, TableInspector } from "react-inspector";
 import {
-  CHANGE_OPTIONS_MESSAGE_TYPE,
+  CHANGE_OPTIONS_MESSAGE_TYPE, DEFAULT_BACKGROUND_COLOR,
   PING_MESSAGE_TYPE,
   PONG_MESSAGE_TYPE
 } from "../constants";
@@ -86,21 +86,31 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
         zIndex: 99999,
         right: 0,
         bottom: 0,
-        backgroundColor: "rgba(0, 0, 0, 0)",
+        backgroundColor: DEFAULT_BACKGROUND_COLOR,
         maxHeight: "100vh",
         overflowY: "scroll"
       }}
     >
       {shouldShow && (
         <>
-          {filteredLogs.map(log => (
+          {filteredLogs.map(log => log.eventType === "table" ? (
+            <TableInspector
+              key={log.id}
+              data={log.message}
+              theme={{
+                ...chromeLight,
+                BASE_BACKGROUND_COLOR:
+                  options[log.eventType]?.backgroundColor ?? DEFAULT_BACKGROUND_COLOR
+              }}
+            />
+          ) : (
             <ObjectInspector
               key={log.id}
               data={log.message}
               theme={{
                 ...chromeLight,
                 BASE_BACKGROUND_COLOR:
-                  options[log.eventType]?.backgroundColor ?? "rgba(0, 0, 0, 0)"
+                  options[log.eventType]?.backgroundColor ?? DEFAULT_BACKGROUND_COLOR
               }}
             />
           ))}
