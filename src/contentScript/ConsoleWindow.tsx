@@ -89,7 +89,9 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
   if (options == null || !isReady) return null;
   return (
     <Resizable
+      minWidth="10rem"
       maxWidth="95vw"
+      maxHeight="100vh"
       style={{
         position: "fixed",
         zIndex: 99999,
@@ -129,7 +131,7 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
                 )
               }
             >
-              Toggle
+              Hide
             </button>
             <button
               style={{ flex: 1 }}
