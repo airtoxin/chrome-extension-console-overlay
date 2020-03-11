@@ -89,7 +89,6 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
   if (options == null || !isReady) return null;
   return (
     <Resizable
-      minWidth="10rem"
       maxWidth="95vw"
       maxHeight="100vh"
       style={{
