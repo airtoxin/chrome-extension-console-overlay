@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { EventEmitter } from "events";
-import { chromeLight, ObjectInspector, TableInspector } from "react-inspector";
+import { chromeLight, Inspector } from "react-inspector";
 import {
   CHANGE_OPTIONS_MESSAGE_TYPE,
   DEFAULT_BACKGROUND_COLOR,
@@ -100,31 +100,19 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
     >
       {shouldShow && (
         <>
-          {filteredLogs.map(log =>
-            log.eventType === "table" ? (
-              <TableInspector
-                key={log.id}
-                data={log.message}
-                theme={{
-                  ...chromeLight,
-                  BASE_BACKGROUND_COLOR:
-                    options[log.eventType]?.backgroundColor ??
-                    DEFAULT_BACKGROUND_COLOR
-                }}
-              />
-            ) : (
-              <ObjectInspector
-                key={log.id}
-                data={log.message}
-                theme={{
-                  ...chromeLight,
-                  BASE_BACKGROUND_COLOR:
-                    options[log.eventType]?.backgroundColor ??
-                    DEFAULT_BACKGROUND_COLOR
-                }}
-              />
-            )
-          )}
+          {filteredLogs.map(log => (
+            <Inspector
+              key={log.id}
+              data={log.message}
+              table={(log.eventType === "table") as any}
+              theme={{
+                ...chromeLight,
+                BASE_BACKGROUND_COLOR:
+                  options[log.eventType]?.backgroundColor ??
+                  DEFAULT_BACKGROUND_COLOR
+              }}
+            />
+          ))}
           <div style={{ display: "flex" }}>
             <button
               style={{ flex: 1 }}

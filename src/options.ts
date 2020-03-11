@@ -4,7 +4,14 @@ export type LoggingOption = {
   use: boolean;
   backgroundColor: string;
 };
-export type LogType = "trace" | "debug" | "log" | "info" | "warn" | "error" | "table";
+export type LogType =
+  | "trace"
+  | "debug"
+  | "log"
+  | "info"
+  | "warn"
+  | "error"
+  | "table";
 
 export type Options = {
   [logType in LogType]: LoggingOption;
