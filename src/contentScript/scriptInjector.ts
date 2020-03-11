@@ -1,5 +1,10 @@
 import { onChangeOptions } from "../storage";
-import { CHANGE_OPTIONS_MESSAGE_TYPE, PING_MESSAGE_TYPE, PONG_MESSAGE_TYPE, SCRIPT_ID } from "../constants";
+import {
+  CHANGE_OPTIONS_MESSAGE_TYPE,
+  PING_MESSAGE_TYPE,
+  PONG_MESSAGE_TYPE,
+  SCRIPT_ID
+} from "../constants";
 
 const injectScriptFile = function(file: string) {
   const script = document.createElement("script");

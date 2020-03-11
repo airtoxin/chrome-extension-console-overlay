@@ -7,12 +7,12 @@ export const LoggingOption: React.FunctionComponent<{
   backgroundColor: string;
   onChangeBackgroundColor: (nextBackgroundColor: string) => void;
 }> = ({
-        logType,
-        use,
-        onChangeUse,
-        backgroundColor,
-        onChangeBackgroundColor
-      }) => {
+  logType,
+  use,
+  onChangeUse,
+  backgroundColor,
+  onChangeBackgroundColor
+}) => {
   return (
     <tr>
       <td>console.{logType}</td>

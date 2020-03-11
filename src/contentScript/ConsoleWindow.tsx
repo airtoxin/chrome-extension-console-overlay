@@ -91,42 +91,42 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
         overflowY: "scroll"
       }}
     >
-      {
-        shouldShow && (
-          <>
-            {filteredLogs.map(log => (
-              <ObjectInspector
-                key={log.id}
-                data={log.message}
-                theme={{
-                  ...chromeLight,
-                  BASE_BACKGROUND_COLOR:
-                    options[log.eventType]?.backgroundColor ?? "rgba(0, 0, 0, 0)"
-                }}
-              />
-            ))}
-            <div style={{ display: "flex" }}>
-              <button
-                style={{ flex: 1 }}
-                onClick={() =>
-                  setVisibility(visibility === "visible" ? "invisible" : "visible")
-                }
-              >
-                Toggle
-              </button>
-              <button
-                style={{ flex: 1 }}
-                onClick={() => {
-                  setLogs([]);
-                  setVisibility("initial");
-                }}
-              >
-                Clear
-              </button>
-            </div>
-          </>
-        )
-      }
+      {shouldShow && (
+        <>
+          {filteredLogs.map(log => (
+            <ObjectInspector
+              key={log.id}
+              data={log.message}
+              theme={{
+                ...chromeLight,
+                BASE_BACKGROUND_COLOR:
+                  options[log.eventType]?.backgroundColor ?? "rgba(0, 0, 0, 0)"
+              }}
+            />
+          ))}
+          <div style={{ display: "flex" }}>
+            <button
+              style={{ flex: 1 }}
+              onClick={() =>
+                setVisibility(
+                  visibility === "visible" ? "invisible" : "visible"
+                )
+              }
+            >
+              Toggle
+            </button>
+            <button
+              style={{ flex: 1 }}
+              onClick={() => {
+                setLogs([]);
+                setVisibility("initial");
+              }}
+            >
+              Clear
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };
