@@ -1,6 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { EventEmitter } from "events";
-import { chromeLight, Inspector } from "react-inspector";
+import {
+  chromeLight,
+  Inspector,
+  InspectorNodeRenderer,
+  ObjectLabel,
+  ObjectRootLabel
+} from "react-inspector";
 import {
   CHANGE_OPTIONS_MESSAGE_TYPE,
   DEFAULT_BACKGROUND_COLOR,
@@ -111,6 +117,7 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
                   options[log.eventType]?.backgroundColor ??
                   DEFAULT_BACKGROUND_COLOR
               }}
+              nodeRenderer={NodeRenderer}
             />
           ))}
           <div style={{ display: "flex" }}>
@@ -137,5 +144,24 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
         </>
       )}
     </Resizable>
+  );
+};
+
+const NodeRenderer: InspectorNodeRenderer = ({
+  depth,
+  name,
+  data,
+  isNonenumerable
+}) => {
+  return depth === 0 && Array.isArray(data) ? (
+    <span>
+      {data.map((d, i) => (
+        <span style={{ paddingRight: "0.5rem" }} key={i}>
+          <ObjectRootLabel name={name} data={d} />
+        </span>
+      ))}
+    </span>
+  ) : (
+    <ObjectLabel name={name} data={data} isNonenumerable={isNonenumerable} />
   );
 };
