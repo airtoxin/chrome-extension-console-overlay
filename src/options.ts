@@ -11,7 +11,7 @@ export type Options = {
 export const initialValue: Options = {
   trace: {
     use: false,
-    backgroundColor: "rgba(0,0,0,0)"
+    backgroundColor: "rgba(255,255,255,0.1)"
   },
   debug: {
     use: false,
@@ -19,11 +19,11 @@ export const initialValue: Options = {
   },
   log: {
     use: true,
-    backgroundColor: "rgba(0,0,0,0)"
+    backgroundColor: "rgba(255,255,255,0.1)"
   },
   info: {
     use: true,
-    backgroundColor: "rgba(0,0,0,0)"
+    backgroundColor: "rgba(255,255,255,0.1)"
   },
   warn: {
     use: true,
