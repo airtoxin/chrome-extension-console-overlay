@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { EventEmitter } from "events";
 import {
   chromeLight,
@@ -42,6 +42,8 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
     () => visibility === "visible" && filteredLogs.length > 0,
     [filteredLogs.length, visibility]
   );
+  const outerRef = useRef<HTMLDivElement | null>(null);
+  const innerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const listener = (event: MessageEvent) => {
@@ -86,65 +88,96 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
     return () => window.removeEventListener("message", listener);
   }, []);
 
+  useEffect(() => {
+    if (
+      outerRef.current &&
+      innerRef.current &&
+      innerRef.current.clientHeight > window.innerHeight
+    ) {
+      // HACK: if not delayed, scroll to bottom works incompletely.
+      // Maybe problem occurred by timing of rendering and hooks evaluation.
+      // MEMO: useLayoutEffect wasn't fix this problem.
+      requestAnimationFrame(() => {
+        if (
+          outerRef.current &&
+          innerRef.current &&
+          innerRef.current.clientHeight > window.innerHeight
+        ) {
+          outerRef.current.scrollTo({ top: innerRef.current.clientHeight });
+        }
+      });
+    }
+  }, [filteredLogs]);
+
   if (options == null || !isReady) return null;
   return (
-    <Resizable
-      maxWidth="95vw"
-      maxHeight="100vh"
+    <div
+      className="OUTER_REF"
+      ref={outerRef}
       style={{
         position: "fixed",
         zIndex: 99999,
         right: 0,
         bottom: 0,
         backgroundColor: DEFAULT_BACKGROUND_COLOR,
-        overflowY: "scroll",
-        paddingLeft: "0.5rem",
-        borderLeft: "3px double lightgray"
-      }}
-      enable={{
-        left: true
+        maxHeight: "100vh",
+        overflowY: "scroll"
       }}
     >
-      {shouldShow && (
-        <>
-          {filteredLogs.map(log => (
-            <Inspector
-              key={log.id}
-              data={log.message}
-              table={(log.eventType === "table") as any}
-              theme={{
-                ...chromeLight,
-                BASE_BACKGROUND_COLOR:
-                  options[log.eventType]?.backgroundColor ??
-                  DEFAULT_BACKGROUND_COLOR
-              }}
-              nodeRenderer={NodeRenderer}
-            />
-          ))}
-          <div style={{ display: "flex" }}>
-            <button
-              style={{ flex: 1 }}
-              onClick={() =>
-                setVisibility(
-                  visibility === "visible" ? "invisible" : "visible"
-                )
-              }
-            >
-              Hide
-            </button>
-            <button
-              style={{ flex: 1 }}
-              onClick={() => {
-                setLogs([]);
-                setVisibility("initial");
-              }}
-            >
-              Clear
-            </button>
-          </div>
-        </>
-      )}
-    </Resizable>
+      <div className="INNER_REF" ref={innerRef}>
+        <Resizable
+          maxWidth="95vw"
+          style={{
+            paddingLeft: "0.5rem",
+            borderLeft: "3px double lightgray"
+          }}
+          enable={{
+            left: true
+          }}
+        >
+          {shouldShow && (
+            <>
+              {filteredLogs.map(log => (
+                <Inspector
+                  key={log.id}
+                  data={log.message}
+                  table={(log.eventType === "table") as any}
+                  theme={{
+                    ...chromeLight,
+                    BASE_BACKGROUND_COLOR:
+                      options[log.eventType]?.backgroundColor ??
+                      DEFAULT_BACKGROUND_COLOR
+                  }}
+                  expandLevel={10}
+                  nodeRenderer={NodeRenderer}
+                />
+              ))}
+              <div style={{ display: "flex" }}>
+                <button
+                  style={{ flex: 1 }}
+                  onClick={() =>
+                    setVisibility(
+                      visibility === "visible" ? "invisible" : "visible"
+                    )
+                  }
+                >
+                  Hide
+                </button>
+                <button
+                  style={{ flex: 1 }}
+                  onClick={() => {
+                    setLogs([]);
+                    setVisibility("initial");
+                  }}
+                >
+                  Clear
+                </button>
+              </div>
+            </>
+          )}
+        </Resizable>
+      </div>
+    </div>
   );
 };
 
