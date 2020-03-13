@@ -73,14 +73,14 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
         );
       } else {
         setLogs(
-          logs.concat([
-            {
+          immer(logs, produce => {
+            produce.push({
               id: Math.random(),
               eventType,
               message,
               duplicateLogs: 1
-            }
-          ])
+            });
+          })
         );
       }
       setVisibility("visible");
@@ -175,8 +175,8 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
                       marginRight: "0.5rem"
                     }}
                   >
-                      {log.duplicateLogs}
-                    </div>
+                    {log.duplicateLogs}
+                  </div>
                   <Inspector
                     key={log.id}
                     data={log.message}
