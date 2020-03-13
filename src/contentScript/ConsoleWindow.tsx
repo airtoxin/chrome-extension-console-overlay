@@ -187,7 +187,6 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
                         options[log.eventType]?.backgroundColor ??
                         DEFAULT_BACKGROUND_COLOR
                     }}
-                    expandLevel={10}
                     nodeRenderer={NodeRenderer}
                   />
                 </span>
