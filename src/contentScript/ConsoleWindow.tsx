@@ -15,6 +15,7 @@ import {
 } from "../constants";
 import { LogType, Options } from "../options";
 import { Resizable } from "re-resizable";
+import immer from "immer";
 
 type Props = {
   logger: EventEmitter;
@@ -24,6 +25,7 @@ type LogMessage = {
   id: number;
   eventType: LogType;
   message: any[];
+  duplicateLogs: number;
 };
 
 export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
@@ -58,16 +60,29 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
   }, []);
 
   useEffect(() => {
+    const lastLog = logs[logs.length - 1];
     const listener = (eventType: LogType, message: any[]) => {
-      setLogs(
-        logs.concat([
-          {
-            id: Math.random(),
-            eventType,
-            message
-          }
-        ])
-      );
+      if (
+        lastLog &&
+        JSON.stringify(lastLog.message) === JSON.stringify(message)
+      ) {
+        setLogs(
+          immer(logs, produce => {
+            produce[logs.length - 1].duplicateLogs += 1;
+          })
+        );
+      } else {
+        setLogs(
+          logs.concat([
+            {
+              id: Math.random(),
+              eventType,
+              message,
+              duplicateLogs: 1
+            }
+          ])
+        );
+      }
       setVisibility("visible");
     };
 
@@ -137,7 +152,6 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
         <Resizable
           maxWidth="95vw"
           style={{
-            paddingLeft: "0.5rem",
             borderLeft: "3px double lightgray"
           }}
           enable={{
@@ -147,19 +161,36 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
           {shouldShow && (
             <>
               {filteredLogs.map(log => (
-                <Inspector
-                  key={log.id}
-                  data={log.message}
-                  table={(log.eventType === "table") as any}
-                  theme={{
-                    ...chromeLight,
-                    BASE_BACKGROUND_COLOR:
-                      options[log.eventType]?.backgroundColor ??
-                      DEFAULT_BACKGROUND_COLOR
-                  }}
-                  expandLevel={10}
-                  nodeRenderer={NodeRenderer}
-                />
+                <span style={{ display: "flex" }}>
+                  <div
+                    style={{
+                      fontSize: "0.8rem",
+                      border: "solid 1px black",
+                      borderRadius: "50%",
+                      backgroundColor: options[log.eventType].backgroundColor,
+                      minWidth: "1rem",
+                      height: "1rem",
+                      textAlign: "center",
+                      visibility: log.duplicateLogs > 1 ? "visible" : "hidden",
+                      marginRight: "0.5rem"
+                    }}
+                  >
+                      {log.duplicateLogs}
+                    </div>
+                  <Inspector
+                    key={log.id}
+                    data={log.message}
+                    table={(log.eventType === "table") as any}
+                    theme={{
+                      ...chromeLight,
+                      BASE_BACKGROUND_COLOR:
+                        options[log.eventType]?.backgroundColor ??
+                        DEFAULT_BACKGROUND_COLOR
+                    }}
+                    expandLevel={10}
+                    nodeRenderer={NodeRenderer}
+                  />
+                </span>
               ))}
               <div style={{ display: "flex" }}>
                 <button
