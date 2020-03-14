@@ -161,7 +161,7 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
           {shouldShow && (
             <>
               {filteredLogs.map(log => (
-                <span style={{ display: "flex" }}>
+                <span key={log.id} style={{ display: "flex" }}>
                   <div
                     style={{
                       fontSize: "0.8rem",
@@ -178,7 +178,6 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
                     {log.duplicateLogs}
                   </div>
                   <Inspector
-                    key={log.id}
                     data={log.message}
                     table={(log.eventType === "table") as any}
                     theme={{
