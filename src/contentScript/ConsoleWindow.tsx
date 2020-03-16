@@ -62,9 +62,10 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
   useEffect(() => {
     const lastLog = logs[logs.length - 1];
     const listener = (eventType: LogType, message: any[]) => {
+      const serializedMessage = JSON.stringify(message);
       if (
         lastLog &&
-        JSON.stringify(lastLog.message) === JSON.stringify(message)
+        JSON.stringify(lastLog.message) === serializedMessage
       ) {
         setLogs(
           immer(logs, produce => {
@@ -77,7 +78,7 @@ export const ConsoleWindow: React.FunctionComponent<Props> = ({ logger }) => {
             produce.push({
               id: Math.random(),
               eventType,
-              message,
+              message: JSON.parse(serializedMessage),
               duplicateLogs: 1
             });
           })
